@@ -1,0 +1,213 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="roas">
+  
+  <material name="Black"><color rgba="${1/255} ${1/255} ${1/255} 1.0"/></material>
+  <material name="dark_grey"><color rgba="0.2 0.2 0.2 1.0"/></material>
+
+  <xacro:property name="PI" value="3.1415926535897931"/>
+  <xacro:include filename="$(find scout_bot_description)/description/scout_v2.xacro" />
+
+  <!-- Frame -->
+  <link name="main_frame_link">
+  <visual>
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <geometry>
+      <mesh filename="package://scout_bot_description/meshes/include/Frame.stl" />
+    </geometry>
+    <material name="dark_grey"/>
+  </visual>
+  <collision>
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <geometry>
+      <mesh filename="package://scout_bot_description/meshes/include/Frame.stl" />
+    </geometry>
+  </collision>
+  </link>
+
+  <joint name="main_frame_joint" type="fixed">
+    <parent link="base_footprint" />
+    <child link="main_frame_link" />
+    <origin xyz="0 0 0.1349" rpy="0 0 0" />
+  </joint>
+  
+  <!-- Ouster -->
+  <link name="lidar_link">
+    <visual>
+      <origin xyz="0.5421 0.0020 0.3855" rpy="-0.0022 -0.0125 0.0015" />
+      <geometry>
+        <mesh filename="package://scout_bot_description/meshes/lidar/os1_64.dae"/>
+      </geometry>
+    </visual>
+  </link>
+
+  <gazebo reference="lidar_link">
+    <sensor name="lidar_3d" type="ray">
+      <pose>0 0 0 0 0 0</pose>
+      <visualize>false</visualize>
+      <update_rate>30</update_rate>
+      <ray>
+        <scan>
+          <horizontal>
+            <samples>440</samples>
+            <resolution>1</resolution>
+            <min_angle>-3.141592653589793</min_angle>
+            <max_angle>3.141592653589793</max_angle>
+          </horizontal>
+          <vertical>
+            <samples>16</samples>
+            <resolution>1</resolution>
+            <min_angle>-0.2617993877991494</min_angle>
+            <max_angle>0.2617993877991494</max_angle>
+          </vertical>
+        </scan>
+        <range>z
+          <min>0.3</min>
+          <max>50.0</max>
+          <resolution>0.001</resolution>
+        </range>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.0</stddev>
+        </noise>
+      </ray>
+
+      <plugin filename="libgazebo_ros_velodyne_laser.so" name="gazebo_ros_laser_controller">
+        <topicName>/points_raw</topicName>
+        <!-- <frameName>lidar_base_link</frameName> -->
+        <min_range>0.3</min_range>
+        <max_range>50.0</max_range>
+        <gaussianNoise>0.008</gaussianNoise>
+      </plugin>
+    </sensor>
+  </gazebo>
+  
+  <joint name="os_sensor_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="lidar_link" />
+    <origin xyz="0.5421 0.0020 0.3855" rpy="-0.0022 -0.0125 0.0015" />
+  </joint>
+  
+  <!-- Sonar 1 (right) -->
+  <link name="S2"/>
+  
+  <joint name="S2_joint" type="fixed">
+    <parent link="base_footprint" />
+    <child link="S2" />
+    <origin xyz="0 0.3 0.364" rpy="0 0 ${PI/2}" />
+  </joint>
+  
+  <!-- Sonar 2 (left) -->
+  <link name="S1"/>
+  
+  <joint name="S1_joint" type="fixed">
+    <parent link="base_footprint" />
+    <child link="S1" />
+    <origin xyz="0 -0.3 0.364" rpy="0 0 -${PI/2}" />
+  </joint>
+  
+  <!-- Sonar 3 -->
+  <link name="S3"/>
+  
+  <joint name="S3_joint" type="fixed">
+    <parent link="base_footprint" />
+    <child link="S3" />
+    <origin xyz="-0.400 0.120 0.364" rpy="0 0 -${PI}" />
+  </joint>
+  
+  <!-- Sonar 4 -->
+  <link name="S4"/>
+  
+  <joint name="S4_joint" type="fixed">
+    <parent link="base_footprint" />
+    <child link="S4" />
+    <origin xyz="-0.400 -0.120 0.364" rpy="0 0 -${PI}" />
+  </joint>
+  
+  
+  <!-- Camera 1 -->
+  <link name="Cam1"/>
+  
+  <joint name="Cam1_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="Cam1" />
+    <origin xyz="0.575 0 0.0945" rpy="0 0 0" />
+  </joint>
+  
+  <!-- Camera 2 -->
+  <link name="Cam2"/>
+  
+  <joint name="Cam2_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="Cam2" />
+    <origin xyz="0 0.303 0.1815" rpy="0 0 ${PI/2}" />
+  </joint>
+  
+  <!-- Camera 3 -->
+  <link name="Cam3"/>
+  
+  <joint name="Cam3_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="Cam3" />
+    <origin xyz="0 -0.303 0.1815" rpy="0 0 -${PI/2}" />
+  </joint>
+  
+  <!-- Camera 4 -->
+  <link name="Cam4"/>
+  
+  <joint name="Cam4_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="Cam4" />
+    <origin xyz="-0.403 0 0.1295" rpy="0 0 -${PI}" />
+  </joint>
+
+
+  <!-- diff_driving setting -->
+  <gazebo>
+    <plugin name='skid_steer_drive' filename='libgazebo_ros_diff_drive.so'>
+    <ros>
+      <!-- Set namespace -->
+      <namespace>/demo</namespace>
+
+      <!-- Remap default topics -->
+      <!-- <remapping>cmd_vel:=cmd_demo</remapping>
+      <remapping>odom:=odom_demo</remapping> -->
+    </ros>
+
+    <!-- Update rate -->
+<!--         <update_rate>500</update_rate>-->
+    <!-- Number of wheel pairs -->
+    <num_wheel_pairs>2</num_wheel_pairs>
+
+    <!-- wheels0 -->
+    <left_joint>front_left_wheel_joint</left_joint>
+    <right_joint>front_right_wheel_joint</right_joint>
+
+    <!-- wheels1-->
+    <left_joint>rear_left_wheel_joint</left_joint>
+    <right_joint>rear_right_wheel_joint</right_joint>
+
+    <!-- kinematics -->
+    <wheel_separation>0.4</wheel_separation>
+    <wheel_separation>0.4</wheel_separation>
+
+    <wheel_diameter>0.2</wheel_diameter>
+    <wheel_diameter>0.2</wheel_diameter>
+
+    <!-- limits -->
+    <max_wheel_torque>20</max_wheel_torque>
+    <max_wheel_acceleration>1.0</max_wheel_acceleration>
+
+    <!-- output -->
+    <publish_odom>true</publish_odom>
+    <publish_odom_tf>true</publish_odom_tf>
+    <publish_wheel_tf>true</publish_wheel_tf>
+
+    <odometry_frame>odom</odometry_frame>
+    <robot_base_frame>base_link</robot_base_frame>
+
+  </plugin>
+</gazebo>
+
+</robot>

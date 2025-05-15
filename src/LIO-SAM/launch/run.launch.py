@@ -19,7 +19,7 @@ def generate_launch_description():
             share_dir, 'config', 'params.yaml'),
         description='FPath to the ROS2 parameters file to use.')
 
-    print("urdf_file_name : {}".format(xacro_path))
+    # print("urdf_file_name : {}".format(xacro_path))
 
     return LaunchDescription([
         params_declare,
