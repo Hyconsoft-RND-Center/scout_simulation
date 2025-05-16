@@ -8,7 +8,7 @@
     gpsTopic: "odometry/gpsz"                    # GPS odometry topic from navsat, see module_navsat.launch file
     
     # Frames
-    lidarFrame: "base_link" # os_sensor # base_link 
+    lidarFrame: "os_sensor" # os_sensor # base_link 
     baselinkFrame: "base_link"
     imuFrame: "imu_link"
     odometryFrame: "odom"
